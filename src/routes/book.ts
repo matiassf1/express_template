@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { readJson } from "../utils";
-import { validateBook, validatePartialBook } from "../schemas/book";
+import { validateBook, validatePartialBook, Book } from "../schemas/book";
 
 const books = readJson('../book.json')
 
@@ -12,7 +12,7 @@ bookRouter.get('/', (req, res) => {
 
 bookRouter.get('/:id', (req, res) => {
     const { id } = req.query;
-    const book = books.find(book => book.id === id);
+    const book = books.find((book: Book) => book.id === id);
 
     if (!book) return res.status(404).json({ message: `Book with ${id} ID not found.` })
 
@@ -40,12 +40,12 @@ bookRouter.patch('/:id', (req, res) => {
         return res.status(400).json({ error: JSON.parse(result.error.message) });
     }
 
-    const bookIndex = books.findIndex(book => book.id === id);
+    const bookIndex = books.findIndex((book: Book) => book.id === id);
     if (bookIndex === -1) {
         return res.status(401).json({ message: 'Book not found' });
     }
 
-    const updateBook = {
+    const updateBook: Book = {
         ...books[bookIndex],
         ...result.data
     };
@@ -58,7 +58,7 @@ bookRouter.patch('/:id', (req, res) => {
 bookRouter.delete('/:id', (req, res) => {
     const { id } = req.query;
 
-    const bookIndex = books.findIndex((book) => book.id === id);
+    const bookIndex = books.findIndex((book: Book) => book.id === id);
 
     if (bookIndex === -1) {
         return res.status(401).json({ message: 'Book not found' });
