@@ -1,6 +1,6 @@
 import express, { json, application } from 'express'
-import { booksRouter } from './routes/books'
-import { authorsRouter } from './routes/authors';
+import { bookRouter } from './routes/book'
+import { authorRouter } from './routes/author';
 import { corsMiddleware } from './middlewares/cors';
 
 const app: application = express()
@@ -9,6 +9,6 @@ const port = process.env.PORT ?? 3000
 app.use(json());
 app.use(corsMiddleware());
 
-app.use('/books', booksRouter);
-app.use('/authors', authorsRouter);
+app.use('/books', bookRouter);
+app.use('/authors', authorRouter);
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
