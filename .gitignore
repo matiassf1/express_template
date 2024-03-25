@@ -1,0 +1,17 @@
+# Dependency directories
+node_modules/
+npm-debug.log
+
+# dotenv environment variables file
+.env
+
+# Mac OSX specific files
+.DS_Store
+
+# Editor directories and files
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw*
