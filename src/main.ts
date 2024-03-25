@@ -1,9 +1,9 @@
-import express, { json, application } from 'express'
+import express, { json, Application } from 'express'
 import { bookRouter } from './routes/book'
 import { authorRouter } from './routes/author';
 import { corsMiddleware } from './middlewares/cors';
 
-const app: application = express()
+const app: Application = express()
 const port = process.env.PORT ?? 3000
 
 app.use(json());
