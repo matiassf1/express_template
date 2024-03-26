@@ -1,11 +1,13 @@
-import { MongoClient } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
 
 export class Database {
     private client: MongoClient | null = null;
     private uri: string;
+    private dbName: string;
 
-    constructor(uri: string) {
+    constructor(uri: string, dbName: string) {
         this.uri = uri;
+        this.dbName = dbName;
     }
 
     async connect(): Promise<void> {
@@ -31,10 +33,10 @@ export class Database {
         }
     }
 
-    getClient(): MongoClient {
+    getDb(): Db {
         if (!this.client) {
             throw new Error('La conexión a la base de datos no ha sido establecida.');
         }
-        return this.client;
+        return this.client.db(this.dbName);
     }
 }
