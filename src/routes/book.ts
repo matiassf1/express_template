@@ -1,8 +1,5 @@
 import { Router } from "express";
 import { BookController } from "../controllers/book";
-import { Database } from "../database/MongoDb";
-import { uri } from "../../config";
-
 
 export const bookRouter = (bookController: BookController) => {
     const router = Router()
