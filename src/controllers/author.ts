@@ -1,139 +1,89 @@
 import { Request, Response } from "express";
+import { AuthorMongoModel } from "../model/author";
 import { Author, validateAuthor, validatePartialAuthor } from "../schemas/author";
 
-const authors = [
-    {
-        "id": "1",
-        "name": "Gabriel García Márquez",
-        "birth_date": "1927-03-06",
-        "nationality": "Colombiano",
-        "famous_works": [
-            {
-                "title": "Cien años de soledad",
-                "year": 1967
-            },
-            {
-                "title": "El amor en los tiempos del cólera",
-                "year": 1985
-            }
-        ]
-    },
-    {
-        "id": "2",
-        "name": "George Orwell",
-        "birth_date": "1903-06-25",
-        "nationality": "Británico",
-        "famous_works": [
-            {
-                "title": "1984",
-                "year": 1949
-            },
-            {
-                "title": "Rebelión en la granja",
-                "year": 1945
-            }
-        ]
-    },
-    {
-        "id": "3",
-        "name": "J.R.R. Tolkien",
-        "birth_date": "1892-01-03",
-        "nationality": "Británico",
-        "famous_works": [
-            {
-                "title": "El Señor de los Anillos: La Comunidad del Anillo",
-                "year": 1954
-            },
-            {
-                "title": "El Hobbit",
-                "year": 1937
-            }
-        ]
-    }
-]
-
-
 export class AuthorController {
+    private authorModel: AuthorMongoModel;
 
-    static async getAll(req: Request, res: Response) {
+    constructor(authorModel: AuthorMongoModel) {
+        this.authorModel = authorModel;
+    }
+
+    async getAll(req: Request, res: Response) {
         try {
+            const authors = await this.authorModel.getAll();
             return res.json(authors);
         } catch (error) {
+            console.error("Error getting all authors:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
 
-    static async getById(req: Request, res: Response) {
+    async getById(req: Request, res: Response) {
         try {
             const id = req.params.id;
-            const author = authors.find((author: Author) => author.id === id);
+            const author = await this.authorModel.getById(id);
 
-            if (!author) return res.status(404).json({ message: `Author with ${id} ID not found.` })
+            if (!author) {
+                return res.status(404).json({ message: `Author with ${id} ID not found.` });
+            }
 
             return res.json(author);
         } catch (error) {
+            console.error("Error getting author by id:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
 
-    static async create(req: Request, res: Response) {
+    async create(req: Request, res: Response) {
         try {
             const result = validateAuthor(req.body);
 
             if (!result.success) {
-                return res.status(400).json({ error: result });
+                return res.status(400).json({ error: result.error });
             }
 
             const newAuthor: Author = result.data;
-            authors.push(newAuthor);
+            
+            const createdAuthor = await this.authorModel.create(newAuthor);
 
-            res.status(201).json(newAuthor);
+            return res.status(201).json(createdAuthor);
         } catch (error) {
+            console.error("Error creating author:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
 
-    static async updateById(req: Request, res: Response) {
+    async updateById(req: Request, res: Response) {
         try {
             const id = req.params.id;
             const result = validatePartialAuthor(req.body);
 
             if (!result.success) {
-                return res.status(400).json({ error: result });
+                return res.status(400).json({ error: result.error });
             }
 
-            const authorIndex = authors.findIndex((author: Author) => author.id === id);
-            if (authorIndex === -1) {
+            const updatedData: Partial<Author> = result.data;
+            const updatedAuthor = await this.authorModel.update(id, updatedData);
+
+            if (!updatedAuthor) {
                 return res.status(404).json({ message: 'Author not found' });
             }
 
-            const updatedAuthor: Author = {
-                ...authors[authorIndex],
-                ...result.data
-            };
-
-            authors[authorIndex] = updatedAuthor;
-
             return res.json(updatedAuthor);
         } catch (error) {
+            console.error("Error updating author:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
 
-    static async delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         try {
             const id = req.params.id;
-
-            const authorIndex = authors.findIndex((author: Author) => author.id === id);
-
-            if (authorIndex === -1) {
-                return res.status(404).json({ message: 'Author not found' });
-            }
-
-            const deletedAuthor = authors.splice(authorIndex, 1)[0];
-
-            return res.json(deletedAuthor);
+            await this.authorModel.delete(id);
+            return res.json({ message: "Author deleted successfully" });
         } catch (error) {
+            console.error("Error deleting author:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
