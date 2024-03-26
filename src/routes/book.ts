@@ -4,16 +4,15 @@ import { Database } from "../database/MongoDb";
 import { uri } from "../../config";
 
 
-export const bookRouter = Router();
+export const bookRouter = (bookController: BookController) => {
+    const router = Router()
 
-const bookController = new BookController(new Database(uri));
+    router.get('/', bookController.getAll);
+    router.get('/:id', bookController.getById);
+    router.post('/', bookController.create);
+    router.patch('/:id', bookController.updateById);
+    router.delete('/:id', bookController.delete);
 
-bookRouter.get('/', bookController.getAll);
+    return router
+};
 
-bookRouter.get('/:id', bookController.getById);
-
-bookRouter.post('/', bookController.create);
-
-bookRouter.patch('/:id', bookController.updateById);
-
-bookRouter.delete('/:id', bookController.delete);
