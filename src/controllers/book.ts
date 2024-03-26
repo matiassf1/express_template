@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BookMongoModel } from "../model/book";
+import { Database } from "../database/MongoDb";
 
 export class BookController {
     private bookModel: BookMongoModel;
