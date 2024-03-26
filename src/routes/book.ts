@@ -1,15 +1,19 @@
 import { Router } from "express";
 import { BookController } from "../controllers/book";
+import { Database } from "../database/MongoDb";
+import { uri } from "../../config";
 
 
 export const bookRouter = Router();
 
-bookRouter.get('/', BookController.getAll);
+const bookController = new BookController(new Database(uri));
 
-bookRouter.get('/:id', BookController.getById);
+bookRouter.get('/', bookController.getAll);
 
-bookRouter.post('/', BookController.create);
+bookRouter.get('/:id', bookController.getById);
 
-bookRouter.patch('/:id', BookController.updateById);
+bookRouter.post('/', bookController.create);
 
-bookRouter.delete('/:id', BookController.delete);
+bookRouter.patch('/:id', bookController.updateById);
+
+bookRouter.delete('/:id', bookController.delete);

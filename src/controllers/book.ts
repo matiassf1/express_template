@@ -1,39 +1,47 @@
 import { Request, Response } from "express";
 import { Book, validateBook, validatePartialBook } from "../schemas/book";
+import { Database } from "../database/MongoDb";
+import { uri } from "../../config";
 
 const books = [
     {
-      "id": "1",
-      "title": "Cien años de soledad",
-      "author": "Gabriel García Márquez",
-      "genre": "Realismo mágico",
-      "year": 1967,
-      "isbn": "978-84-376-0494-7",
-      "publisher": "Editorial Sudamericana"
+        "id": "1",
+        "title": "Cien años de soledad",
+        "author": "Gabriel García Márquez",
+        "genre": "Realismo mágico",
+        "year": 1967,
+        "isbn": "978-84-376-0494-7",
+        "publisher": "Editorial Sudamericana"
     },
     {
-      "id": "2",
-      "title": "1984",
-      "author": "George Orwell",
-      "genre": "Distopía",
-      "year": 1949,
-      "isbn": "978-0-452-28423-4",
-      "publisher": "Secker & Warburg"
+        "id": "2",
+        "title": "1984",
+        "author": "George Orwell",
+        "genre": "Distopía",
+        "year": 1949,
+        "isbn": "978-0-452-28423-4",
+        "publisher": "Secker & Warburg"
     },
     {
-      "id": "3",
-      "title": "El Señor de los Anillos: La Comunidad del Anillo",
-      "author": "J.R.R. Tolkien",
-      "genre": "Fantasía épica",
-      "year": 1954,
-      "isbn": "978-84-450-7050-1",
-      "publisher": "Ediciones Minotauro"
+        "id": "3",
+        "title": "El Señor de los Anillos: La Comunidad del Anillo",
+        "author": "J.R.R. Tolkien",
+        "genre": "Fantasía épica",
+        "year": 1954,
+        "isbn": "978-84-450-7050-1",
+        "publisher": "Ediciones Minotauro"
     }
-  ]
+]
+
 
 export class BookController {
+    private db: Database;
 
-    static async getAll(req: Request, res: Response) {
+    constructor(db: Database) {
+        this.db = db;
+    }
+
+    async getAll(req: Request, res: Response) {
         try {
             return res.json(books);
         } catch (error) {
@@ -41,7 +49,7 @@ export class BookController {
         }
     }
 
-    static async getById(req: Request, res: Response) {
+    async getById(req: Request, res: Response) {
         try {
             const id = req.params.id;
             const book = books.find((book: Book) => book.id === id);
@@ -54,7 +62,7 @@ export class BookController {
         }
     }
 
-    static async create(req: Request, res: Response) {
+    async create(req: Request, res: Response) {
         try {
             const result = validateBook(req.body);
 
@@ -71,7 +79,7 @@ export class BookController {
         }
     }
 
-    static async updateById(req: Request, res: Response) {
+    async updateById(req: Request, res: Response) {
         try {
             const id = req.params.id;
             const result = validatePartialBook(req.body);
@@ -98,7 +106,7 @@ export class BookController {
         }
     }
 
-    static async delete(req: Request, res: Response) {
+    async delete(req: Request, res: Response) {
         try {
             const id = req.params.id;
 
