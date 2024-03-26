@@ -1,50 +1,19 @@
 import { Request, Response } from "express";
-import { Book, validateBook, validatePartialBook } from "../schemas/book";
-import { Database } from "../database/MongoDb";
-import { uri } from "../../config";
-
-const books = [
-    {
-        "id": "1",
-        "title": "Cien años de soledad",
-        "author": "Gabriel García Márquez",
-        "genre": "Realismo mágico",
-        "year": 1967,
-        "isbn": "978-84-376-0494-7",
-        "publisher": "Editorial Sudamericana"
-    },
-    {
-        "id": "2",
-        "title": "1984",
-        "author": "George Orwell",
-        "genre": "Distopía",
-        "year": 1949,
-        "isbn": "978-0-452-28423-4",
-        "publisher": "Secker & Warburg"
-    },
-    {
-        "id": "3",
-        "title": "El Señor de los Anillos: La Comunidad del Anillo",
-        "author": "J.R.R. Tolkien",
-        "genre": "Fantasía épica",
-        "year": 1954,
-        "isbn": "978-84-450-7050-1",
-        "publisher": "Ediciones Minotauro"
-    }
-]
-
+import { BookMongoModel } from "../model/book";
 
 export class BookController {
-    private db: Database;
+    private bookModel: BookMongoModel;
 
-    constructor(db: Database) {
-        this.db = db;
+    constructor(bookModel: BookMongoModel) {
+        this.bookModel = bookModel;
     }
 
     async getAll(req: Request, res: Response) {
         try {
+            const books = await this.bookModel.getAll();
             return res.json(books);
         } catch (error) {
+            console.error("Error getting all books:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
@@ -52,29 +21,26 @@ export class BookController {
     async getById(req: Request, res: Response) {
         try {
             const id = req.params.id;
-            const book = books.find((book: Book) => book.id === id);
+            const book = await this.bookModel.getById(id);
 
-            if (!book) return res.status(404).json({ message: `Book with ${id} ID not found.` })
+            if (!book) {
+                return res.status(404).json({ message: `Book with ${id} ID not found.` });
+            }
 
             return res.json(book);
         } catch (error) {
+            console.error("Error getting book by id:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
 
     async create(req: Request, res: Response) {
         try {
-            const result = validateBook(req.body);
+            const result = await this.bookModel.create(req.body);
 
-            if (!result.success) {
-                return res.status(400).json({ error: result });
-            }
-
-            const newBook: Book = result.data;
-            books.push(newBook);
-
-            res.status(201).json(newBook);
+            return res.status(201).json(result);
         } catch (error) {
+            console.error("Error creating book:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
@@ -82,26 +48,15 @@ export class BookController {
     async updateById(req: Request, res: Response) {
         try {
             const id = req.params.id;
-            const result = validatePartialBook(req.body);
+            const result = await this.bookModel.update(id, req.body);
 
-            if (!result.success) {
-                return res.status(400).json({ error: result });
-            }
-
-            const bookIndex = books.findIndex((book: Book) => book.id === id);
-            if (bookIndex === -1) {
+            if (!result) {
                 return res.status(404).json({ message: 'Book not found' });
             }
 
-            const updateBook: Book = {
-                ...books[bookIndex],
-                ...result.data
-            };
-
-            books[bookIndex] = updateBook;
-
-            return res.json(updateBook);
+            return res.json(result);
         } catch (error) {
+            console.error("Error updating book:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
@@ -109,17 +64,10 @@ export class BookController {
     async delete(req: Request, res: Response) {
         try {
             const id = req.params.id;
-
-            const bookIndex = books.findIndex((book: Book) => book.id === id);
-
-            if (bookIndex === -1) {
-                return res.status(404).json({ message: 'Book not found' });
-            }
-
-            const deletedBook = books.splice(bookIndex, 1)[0];
-
-            return res.json(deletedBook);
+            await this.bookModel.delete(id);
+            return res.json({ message: "Book deleted successfully" });
         } catch (error) {
+            console.error("Error deleting book:", error);
             res.status(500).json({ message: "Internal server error" });
         }
     }
