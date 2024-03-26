@@ -13,7 +13,7 @@ exports.BookMongoModel = void 0;
 const mongodb_1 = require("mongodb");
 class BookMongoModel {
     constructor(booksDb) {
-        this.booksCollection = booksDb.collection('books');
+        this.booksCollection = booksDb.getDb().collection('books');
     }
     getAll() {
         return __awaiter(this, void 0, void 0, function* () {

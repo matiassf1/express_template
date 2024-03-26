@@ -20,16 +20,18 @@ const cors_1 = __importDefault(require("cors"));
 const config_1 = require("../config");
 const MongoDb_1 = require("./database/MongoDb");
 const book_2 = require("./controllers/book");
+const book_3 = require("./model/book");
 const app = (0, express_1.default)();
 const port = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 3000;
 const db = new MongoDb_1.Database(config_1.uri, 'library');
+const bookMongoModel = new book_3.BookMongoModel(db);
 app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield db.connect();
     next();
 }));
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
-app.use('/books', (0, book_1.bookRouter)(new book_2.BookController(db)));
+app.use('/books', (0, book_1.bookRouter)(new book_2.BookController(bookMongoModel)));
 app.use('/authors', author_1.authorRouter);
 app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield db.close();
