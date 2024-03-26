@@ -1,11 +1,12 @@
-import { Collection, Db, ObjectId, WithId } from "mongodb";
+import { Collection, ObjectId, WithId } from "mongodb";
 import { Book } from "../schemas/book";
+import { Database } from "../database/MongoDb";
 
 export class BookMongoModel {
     private booksCollection: Collection;
 
-    constructor(booksDb: Db) {
-        this.booksCollection = booksDb.collection('books');
+    constructor(booksDb: Database) {
+        this.booksCollection = booksDb.getDb().collection('books');
     }
 
     async getAll(): Promise<Book[]> {
