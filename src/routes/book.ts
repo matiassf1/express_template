@@ -1,14 +1,27 @@
 import { Router } from "express";
 import { BookController } from "../controllers/book";
+import { Database } from "../database/MongoDb";
+import { uri } from "../../config";
+
 
 export const bookRouter = (bookController: BookController) => {
     const router = Router()
 
-    router.get('/', bookController.getAll);
-    router.get('/:id', bookController.getById);
-    router.post('/', bookController.create);
-    router.patch('/:id', bookController.updateById);
-    router.delete('/:id', bookController.delete);
+    router.get('/', (req, res) => {
+        bookController.getAll(req, res);
+    });
+    router.get('/:id', (req, res) => {
+        bookController.getById(req, res);
+    });
+    router.post('/', (req, res) => {
+        bookController.create(req, res);
+    });
+    router.patch('/:id', (req, res) => {
+        bookController.updateById(req, res);
+    });
+    router.delete('/:id', (req, res) => {
+        bookController.delete(req, res);
+    });
 
     return router
 };
