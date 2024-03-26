@@ -1,13 +1,13 @@
-import express, { json, Application } from 'express'
-import { bookRouter } from './routes/book'
-import { authorRouter } from './routes/author';
-import { corsMiddleware } from './middlewares/cors';
+import express from "express";
+import { authorRouter } from "./routes/author";
+import { bookRouter } from "./routes/book";
+import cors from "cors";
 
-const app: Application = express()
+const app = express();
 const port = process.env.PORT ?? 3000
 
-app.use(json());
-app.use(corsMiddleware());
+app.use(express.json());
+app.use(cors());
 
 app.use('/books', bookRouter);
 app.use('/authors', authorRouter);

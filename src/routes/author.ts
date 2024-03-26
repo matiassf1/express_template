@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { AuthorController } from "../controllers/author";
 
-
 export const authorRouter = Router();
 
 authorRouter.get('/', AuthorController.getAll);
