@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { BookMongoModel } from "../model/book";
+import { validateBook, validatePartialBook, Book } from "../schemas/book";
 
 export class BookController {
     private bookModel: BookMongoModel;
@@ -36,9 +37,17 @@ export class BookController {
 
     async create(req: Request, res: Response) {
         try {
-            const result = await this.bookModel.create(req.body);
+            const result = validateBook(req.body);
 
-            return res.status(201).json(result);
+            if (!result.success) {
+                return res.status(400).json({ error: result.error });
+            }
+
+            const newBook: Book = result.data;
+            
+            const createdBook = await this.bookModel.create(newBook);
+
+            return res.status(201).json(createdBook);
         } catch (error) {
             console.error("Error creating book:", error);
             res.status(500).json({ message: "Internal server error" });
@@ -48,13 +57,20 @@ export class BookController {
     async updateById(req: Request, res: Response) {
         try {
             const id = req.params.id;
-            const result = await this.bookModel.update(id, req.body);
+            const result = validatePartialBook(req.body);
 
-            if (!result) {
+            if (!result.success) {
+                return res.status(400).json({ error: result.error });
+            }
+
+            const updatedData: Partial<Book> = result.data;
+            const updatedBook = await this.bookModel.update(id, updatedData);
+
+            if (!updatedBook) {
                 return res.status(404).json({ message: 'Book not found' });
             }
 
-            return res.json(result);
+            return res.json(updatedBook);
         } catch (error) {
             console.error("Error updating book:", error);
             res.status(500).json({ message: "Internal server error" });
