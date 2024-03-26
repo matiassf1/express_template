@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookController = void 0;
+const book_1 = require("../schemas/book");
 class BookController {
     constructor(bookModel) {
         this.bookModel = bookModel;
@@ -45,8 +46,13 @@ class BookController {
     create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield this.bookModel.create(req.body);
-                return res.status(201).json(result);
+                const result = (0, book_1.validateBook)(req.body);
+                if (!result.success) {
+                    return res.status(400).json({ error: result.error });
+                }
+                const newBook = result.data;
+                const createdBook = yield this.bookModel.create(newBook);
+                return res.status(201).json(createdBook);
             }
             catch (error) {
                 console.error("Error creating book:", error);
@@ -58,11 +64,16 @@ class BookController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
-                const result = yield this.bookModel.update(id, req.body);
-                if (!result) {
+                const result = (0, book_1.validatePartialBook)(req.body);
+                if (!result.success) {
+                    return res.status(400).json({ error: result.error });
+                }
+                const updatedData = result.data;
+                const updatedBook = yield this.bookModel.update(id, updatedData);
+                if (!updatedBook) {
                     return res.status(404).json({ message: 'Book not found' });
                 }
-                return res.json(result);
+                return res.json(updatedBook);
             }
             catch (error) {
                 console.error("Error updating book:", error);

@@ -11,130 +11,85 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthorController = void 0;
 const author_1 = require("../schemas/author");
-const authors = [
-    {
-        "id": "1",
-        "name": "Gabriel García Márquez",
-        "birth_date": "1927-03-06",
-        "nationality": "Colombiano",
-        "famous_works": [
-            {
-                "title": "Cien años de soledad",
-                "year": 1967
-            },
-            {
-                "title": "El amor en los tiempos del cólera",
-                "year": 1985
-            }
-        ]
-    },
-    {
-        "id": "2",
-        "name": "George Orwell",
-        "birth_date": "1903-06-25",
-        "nationality": "Británico",
-        "famous_works": [
-            {
-                "title": "1984",
-                "year": 1949
-            },
-            {
-                "title": "Rebelión en la granja",
-                "year": 1945
-            }
-        ]
-    },
-    {
-        "id": "3",
-        "name": "J.R.R. Tolkien",
-        "birth_date": "1892-01-03",
-        "nationality": "Británico",
-        "famous_works": [
-            {
-                "title": "El Señor de los Anillos: La Comunidad del Anillo",
-                "year": 1954
-            },
-            {
-                "title": "El Hobbit",
-                "year": 1937
-            }
-        ]
-    }
-];
 class AuthorController {
-    static getAll(req, res) {
+    constructor(authorModel) {
+        this.authorModel = authorModel;
+    }
+    getAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const authors = yield this.authorModel.getAll();
                 return res.json(authors);
             }
             catch (error) {
+                console.error("Error getting all authors:", error);
                 res.status(500).json({ message: "Internal server error" });
             }
         });
     }
-    static getById(req, res) {
+    getById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
-                const author = authors.find((author) => author.id === id);
-                if (!author)
+                const author = yield this.authorModel.getById(id);
+                if (!author) {
                     return res.status(404).json({ message: `Author with ${id} ID not found.` });
+                }
                 return res.json(author);
             }
             catch (error) {
+                console.error("Error getting author by id:", error);
                 res.status(500).json({ message: "Internal server error" });
             }
         });
     }
-    static create(req, res) {
+    create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = (0, author_1.validateAuthor)(req.body);
                 if (!result.success) {
-                    return res.status(400).json({ error: result });
+                    return res.status(400).json({ error: result.error });
                 }
                 const newAuthor = result.data;
-                authors.push(newAuthor);
-                res.status(201).json(newAuthor);
+                const createdAuthor = yield this.authorModel.create(newAuthor);
+                return res.status(201).json(createdAuthor);
             }
             catch (error) {
+                console.error("Error creating author:", error);
                 res.status(500).json({ message: "Internal server error" });
             }
         });
     }
-    static updateById(req, res) {
+    updateById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
                 const result = (0, author_1.validatePartialAuthor)(req.body);
                 if (!result.success) {
-                    return res.status(400).json({ error: result });
+                    return res.status(400).json({ error: result.error });
                 }
-                const authorIndex = authors.findIndex((author) => author.id === id);
-                if (authorIndex === -1) {
+                const updatedData = result.data;
+                const updatedAuthor = yield this.authorModel.update(id, updatedData);
+                if (!updatedAuthor) {
                     return res.status(404).json({ message: 'Author not found' });
                 }
-                const updatedAuthor = Object.assign(Object.assign({}, authors[authorIndex]), result.data);
-                authors[authorIndex] = updatedAuthor;
                 return res.json(updatedAuthor);
             }
             catch (error) {
+                console.error("Error updating author:", error);
                 res.status(500).json({ message: "Internal server error" });
             }
         });
     }
-    static delete(req, res) {
+    delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const id = req.params.id;
-                const authorIndex = authors.findIndex((author) => author.id === id);
-                if (authorIndex === -1) {
-                    return res.status(404).json({ message: 'Author not found' });
-                }
-                const deletedAuthor = authors.splice(authorIndex, 1)[0];
-                return res.json(deletedAuthor);
+                yield this.authorModel.delete(id);
+                return res.json({ message: "Author deleted successfully" });
             }
             catch (error) {
+                console.error("Error deleting author:", error);
                 res.status(500).json({ message: "Internal server error" });
             }
         });

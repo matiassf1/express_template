@@ -2,10 +2,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorRouter = void 0;
 const express_1 = require("express");
-const author_1 = require("../controllers/author");
-exports.authorRouter = (0, express_1.Router)();
-exports.authorRouter.get('/', author_1.AuthorController.getAll);
-exports.authorRouter.get('/:id', author_1.AuthorController.getById);
-exports.authorRouter.post('/', author_1.AuthorController.create);
-exports.authorRouter.patch('/:id', author_1.AuthorController.updateById);
-exports.authorRouter.delete('/:id', author_1.AuthorController.delete);
+const authorRouter = (authorController) => {
+    const router = (0, express_1.Router)();
+    router.get('/', (req, res) => {
+        authorController.getAll(req, res);
+    });
+    router.get('/:id', (req, res) => {
+        authorController.getById(req, res);
+    });
+    router.post('/', (req, res) => {
+        authorController.create(req, res);
+    });
+    router.patch('/:id', (req, res) => {
+        authorController.updateById(req, res);
+    });
+    router.delete('/:id', (req, res) => {
+        authorController.delete(req, res);
+    });
+    return router;
+};
+exports.authorRouter = authorRouter;

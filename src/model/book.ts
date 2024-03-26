@@ -12,7 +12,7 @@ export class BookMongoModel {
     async getAll(): Promise<Book[]> {
         try {
             const booksWithIds = await this.booksCollection.find().toArray() as WithId<Book>[];
-
+            
             const books: Book[] = booksWithIds.map((bookWithId) => this.mapBookFromDatabase(bookWithId));
             return books;
         } catch (error) {

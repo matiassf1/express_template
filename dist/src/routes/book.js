@@ -4,11 +4,21 @@ exports.bookRouter = void 0;
 const express_1 = require("express");
 const bookRouter = (bookController) => {
     const router = (0, express_1.Router)();
-    router.get('/', bookController.getAll);
-    router.get('/:id', bookController.getById);
-    router.post('/', bookController.create);
-    router.patch('/:id', bookController.updateById);
-    router.delete('/:id', bookController.delete);
+    router.get('/', (req, res) => {
+        bookController.getAll(req, res);
+    });
+    router.get('/:id', (req, res) => {
+        bookController.getById(req, res);
+    });
+    router.post('/', (req, res) => {
+        bookController.create(req, res);
+    });
+    router.patch('/:id', (req, res) => {
+        bookController.updateById(req, res);
+    });
+    router.delete('/:id', (req, res) => {
+        bookController.delete(req, res);
+    });
     return router;
 };
 exports.bookRouter = bookRouter;
