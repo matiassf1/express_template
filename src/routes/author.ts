@@ -1,14 +1,24 @@
 import { Router } from "express";
 import { AuthorController } from "../controllers/author";
 
-export const authorRouter = Router();
+export const authorRouter = (authorController: AuthorController) => {
+    const router = Router()
 
-authorRouter.get('/', AuthorController.getAll);
+    router.get('/', (req, res) => {
+        authorController.getAll(req, res);
+    });
+    router.get('/:id', (req, res) => {
+        authorController.getById(req, res);
+    });
+    router.post('/', (req, res) => {
+        authorController.create(req, res);
+    });
+    router.patch('/:id', (req, res) => {
+        authorController.updateById(req, res);
+    });
+    router.delete('/:id', (req, res) => {
+        authorController.delete(req, res);
+    });
 
-authorRouter.get('/:id', AuthorController.getById);
-
-authorRouter.post('/', AuthorController.create);
-
-authorRouter.patch('/:id', AuthorController.updateById);
-
-authorRouter.delete('/:id', AuthorController.delete);
+    return router
+};
