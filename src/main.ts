@@ -9,7 +9,7 @@ import { BookController } from "./controllers/book";
 const app = express();
 const port = process.env.PORT ?? 3000
 
-const db = new Database(uri);
+const db = new Database(uri, 'library');
 
 app.use(async (req, res, next) => {
     await db.connect();
