@@ -19,6 +19,7 @@ class BookMongoModel {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const booksWithIds = yield this.booksCollection.find().toArray();
+                console.log(booksWithIds);
                 const books = booksWithIds.map((bookWithId) => this.mapBookFromDatabase(bookWithId));
                 return books;
             }

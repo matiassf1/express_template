@@ -16,16 +16,17 @@ class Database {
         this.client = null;
         this.uri = uri;
         this.dbName = dbName;
+        this.connect();
     }
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 this.client = new mongodb_1.MongoClient(this.uri);
                 yield this.client.connect();
-                console.log('Conexión establecida correctamente');
+                console.log('Connection established successfully');
             }
             catch (error) {
-                console.error('Error al conectar a la base de datos:', error);
+                console.error('Error connecting to the database:', error);
             }
         });
     }
@@ -34,20 +35,20 @@ class Database {
             try {
                 if (this.client) {
                     yield this.client.close();
-                    console.log('Conexión cerrada correctamente');
+                    console.log('Connection closed successfully');
                 }
                 else {
-                    console.log('No hay conexión abierta para cerrar');
+                    console.log('No open connection to close');
                 }
             }
             catch (error) {
-                console.error('Error al cerrar la conexión:', error);
+                console.error('Error closing the connection:', error);
             }
         });
     }
     getDb() {
         if (!this.client) {
-            throw new Error('La conexión a la base de datos no ha sido establecida.');
+            throw new Error('Database connection has not been established.');
         }
         return this.client.db(this.dbName);
     }
