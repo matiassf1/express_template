@@ -5,57 +5,75 @@ export class BookMongoModel {
     private booksCollection: Collection;
 
     constructor(booksDb: Db) {
-        this.booksCollection = booksDb.collection('books')
+        this.booksCollection = booksDb.collection('books');
     }
 
     async getAll(): Promise<Book[]> {
         try {
             const booksWithIds = await this.booksCollection.find().toArray() as WithId<Book>[];
 
-            const books: Book[] = booksWithIds.map((bookWithId) => ({
-                id: bookWithId._id.toHexString(),
-                title: bookWithId.title,
-                author: bookWithId.author,
-                genre: bookWithId.genre,
-                year: bookWithId.year,
-                isbn: bookWithId.isbn,
-                publisher: bookWithId.publisher,
-            }));
+            const books: Book[] = booksWithIds.map((bookWithId) => this.mapBookFromDatabase(bookWithId));
             return books;
         } catch (error) {
             console.error("Error getting all books:", error);
-            return [];
+            throw new Error("Failed to retrieve books");
         }
     }
 
-
     async getById(id: string): Promise<Book | null> {
-        const book = await this.booksCollection.findOne({ _id: new ObjectId(id) }) as WithId<Book>
-        return book ?? null;
+        try {
+            const book = await this.booksCollection.findOne({ _id: new ObjectId(id) }) as WithId<Book>;
+            return book ? this.mapBookFromDatabase(book) : null;
+        } catch (error) {
+            console.error("Error getting book by id:", error);
+            throw new Error("Failed to retrieve book");
+        }
     }
 
     async create(book: Book): Promise<Book> {
-        await this.booksCollection.insertOne(book);
-        return book;
+        try {
+            await this.booksCollection.insertOne(book);
+            return book;
+        } catch (error) {
+            console.error("Error creating book:", error);
+            throw new Error("Failed to create book");
+        }
     }
 
-    async update(id: string, newBook: any) { //create dto to updateBooks
-        const book = await this.booksCollection.findOne({ _id: new ObjectId(id) }) as WithId<Book>;
-        if (!book) {
-            throw new Error("Book not found");
+    async update(id: string, updatedBook: Partial<Book>): Promise<Book> {
+        try {
+            const book = await this.getById(id);
+            if (!book) {
+                throw new Error("Book not found");
+            }
+
+            const mergedBook = { ...book, ...updatedBook };
+            await this.booksCollection.updateOne({ _id: new ObjectId(id) }, { $set: mergedBook });
+            return mergedBook;
+        } catch (error) {
+            console.error("Error updating book:", error);
+            throw new Error("Failed to update book");
         }
-
-        newBook = {
-            ...book,
-            ...newBook
-        };
-
-        await this.booksCollection.updateOne({ _id: new ObjectId(id) }, newBook);
-        return newBook
     }
 
     async delete(id: string): Promise<void> {
-        await this.booksCollection.deleteOne({ _id: new ObjectId(id) });
+        try {
+            await this.booksCollection.deleteOne({ _id: new ObjectId(id) });
+        } catch (error) {
+            console.error("Error deleting book:", error);
+            throw new Error("Failed to delete book");
+        }
     }
 
+    private mapBookFromDatabase(book: WithId<Book>): Book {
+        return {
+            id: book._id.toHexString(),
+            title: book.title,
+            author: book.author,
+            genre: book.genre,
+            year: book.year,
+            isbn: book.isbn,
+            publisher: book.publisher,
+        };
+    }
 }
