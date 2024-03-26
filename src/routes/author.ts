@@ -1,23 +1,15 @@
 import { Router } from "express";
+import { AuthorController } from "../controllers/author";
+
 
 export const authorRouter = Router();
 
-authorRouter.get('/', (req, res) => {
+authorRouter.get('/', AuthorController.getAll);
 
-})
+authorRouter.get('/:id', AuthorController.getById);
 
-authorRouter.get('/:id', (req, res) => {
+authorRouter.post('/', AuthorController.create);
 
-})
+authorRouter.patch('/:id', AuthorController.updateById);
 
-authorRouter.post('/', (req, res) => {
-
-})
-
-authorRouter.patch('/', (req, res) => {
-
-})
-
-authorRouter.delete('/', (req, res) => {
-
-})
+authorRouter.delete('/:id', AuthorController.delete);
