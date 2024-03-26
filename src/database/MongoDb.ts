@@ -8,15 +8,16 @@ export class Database {
     constructor(uri: string, dbName: string) {
         this.uri = uri;
         this.dbName = dbName;
+        this.connect();
     }
 
     async connect(): Promise<void> {
         try {
             this.client = new MongoClient(this.uri);
             await this.client.connect();
-            console.log('Conexión establecida correctamente');
+            console.log('Connection established successfully');
         } catch (error) {
-            console.error('Error al conectar a la base de datos:', error);
+            console.error('Error connecting to the database:', error);
         }
     }
 
@@ -24,18 +25,18 @@ export class Database {
         try {
             if (this.client) {
                 await this.client.close();
-                console.log('Conexión cerrada correctamente');
+                console.log('Connection closed successfully');
             } else {
-                console.log('No hay conexión abierta para cerrar');
+                console.log('No open connection to close');
             }
         } catch (error) {
-            console.error('Error al cerrar la conexión:', error);
+            console.error('Error closing the connection:', error);
         }
     }
 
     getDb(): Db {
         if (!this.client) {
-            throw new Error('La conexión a la base de datos no ha sido establecida.');
+            throw new Error('Database connection has not been established.');
         }
         return this.client.db(this.dbName);
     }
