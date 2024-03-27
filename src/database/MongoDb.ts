@@ -13,14 +13,7 @@ export class Database {
 
     async connect(): Promise<void> {
         try {
-            this.client = new MongoClient(this.uri, {
-                serverApi: {
-                    version: ServerApiVersion.v1,
-                    strict: true,
-                    deprecationErrors: true,
-                },
-                ssl: false
-            });
+            this.client = new MongoClient('mongodb+srv://user:random123@books.p2jaw9s.mongodb.net/?retryWrites=true&w=majority&appName=books');
             await this.client.connect();
             console.log('Connection established successfully');
         } catch (error) {
@@ -45,7 +38,7 @@ export class Database {
         if (!this.client) {
             throw new Error('Database connection has not been established.');
         }
-        return this.client.db(this.dbName);
+        return this.client.db('library');
     }
 
     async checkDatabase(): Promise<boolean> {
@@ -53,7 +46,7 @@ export class Database {
             if (!this.client) {
                 throw new Error('Database connection has not been established.');
             }
-            const db: Db = this.client.db(this.dbName);
+            const db: Db = this.client.db('library');
             const result = await db.command({ ping: 1 });
             if (result.ok === 1) {
                 console.log('Database is up and running');
