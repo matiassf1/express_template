@@ -18,7 +18,8 @@ export class Database {
                     version: ServerApiVersion.v1,
                     strict: true,
                     deprecationErrors: true,
-                }
+                },
+                ssl: false
             });
             await this.client.connect();
             console.log('Connection established successfully');
