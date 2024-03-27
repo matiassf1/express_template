@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthorController = void 0;
-const uuid_1 = require("uuid");
 const author_1 = require("../schemas/author");
 const pagination_1 = require("../common/pagination");
 class AuthorController {
@@ -58,7 +57,7 @@ class AuthorController {
                 if (!result.success) {
                     return res.status(400).json({ error: result.error });
                 }
-                const newAuthor = Object.assign(Object.assign({}, result.data), { id: (0, uuid_1.v4)() });
+                const newAuthor = Object.assign({}, result.data);
                 const createdAuthor = yield this.authorModel.create(newAuthor);
                 return res.status(201).json(createdAuthor);
             }

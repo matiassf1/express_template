@@ -82,7 +82,6 @@ export class AuthorMongoModel {
 
     private mapAuthorFromDatabase(author: WithId<Author>): Author {
         return {
-            id: author._id.toHexString(),
             name: author.name,
             birth_date: author.birth_date,
             nationality: author.nationality,

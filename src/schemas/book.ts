@@ -37,6 +37,7 @@ const BookQueryParamsSchema = z.object({
 
 
 export type Book = {
+    id?: string,
     title: string,
     author: string,
     genre: BookGenre,
