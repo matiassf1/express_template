@@ -1,4 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uri = void 0;
-exports.uri = 'mongodb+srv://user:random123@books.p2jaw9s.mongodb.net/';
+exports.dbName = exports.dbUri = void 0;
+exports.dbUri = process.env.DBuri || '';
+exports.dbName = process.env.DBName || '';

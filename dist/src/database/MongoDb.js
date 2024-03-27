@@ -21,7 +21,7 @@ class Database {
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                this.client = new mongodb_1.MongoClient(this.uri);
+                this.client = new mongodb_1.MongoClient('mongodb+srv://user:random123@books.p2jaw9s.mongodb.net/?retryWrites=true&w=majority&appName=books');
                 yield this.client.connect();
                 console.log('Connection established successfully');
             }
@@ -50,7 +50,7 @@ class Database {
         if (!this.client) {
             throw new Error('Database connection has not been established.');
         }
-        return this.client.db(this.dbName);
+        return this.client.db('library');
     }
     checkDatabase() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -58,7 +58,7 @@ class Database {
                 if (!this.client) {
                     throw new Error('Database connection has not been established.');
                 }
-                const db = this.client.db(this.dbName);
+                const db = this.client.db('library');
                 const result = yield db.command({ ping: 1 });
                 if (result.ok === 1) {
                     console.log('Database is up and running');

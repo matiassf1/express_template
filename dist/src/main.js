@@ -17,13 +17,13 @@ const express_1 = __importDefault(require("express"));
 const author_1 = require("./routes/author");
 const book_1 = require("./routes/book");
 const cors_1 = __importDefault(require("cors"));
-const config_1 = require("../config");
 const MongoDb_1 = require("./database/MongoDb");
 const book_2 = require("./controllers/book");
 const book_3 = require("./model/book");
+const config_1 = require("../config");
 const app = (0, express_1.default)();
 const port = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 3000;
-const db = new MongoDb_1.Database(config_1.uri, 'library');
+const db = new MongoDb_1.Database(config_1.dbUri, config_1.dbName);
 const bookMongoModel = new book_3.BookMongoModel(db);
 app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield db.connect();
