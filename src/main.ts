@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { authorRouter } from "./routes/author";
 import { bookRouter } from "./routes/book";
 import cors from "cors";
@@ -28,4 +28,19 @@ app.use(async (req, res, next) => {
     await db.close();
     next();
 });
+
+app.get('/health', async (req: Request, res: Response) => {
+    try {
+        const isDatabaseHealthy = await db.checkDatabase();
+        if (isDatabaseHealthy) {
+            res.status(200).send('API is healthy');
+        } else {
+            res.status(500).send('Database is not healthy');
+        }
+    } catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).send('Health check failed');
+    }
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
