@@ -1,6 +1,6 @@
 import { Collection, ObjectId, WithId } from "mongodb";
 import { Database } from "../database/MongoDb";
-import { Author } from "../schemas/author";
+import { Author, filterParamsAuthorType } from "../schemas/author";
 
 export class AuthorMongoModel {
     private authorCollection: Collection;
@@ -9,12 +9,26 @@ export class AuthorMongoModel {
         this.authorCollection = authorsDb.getDb().collection('authors');
     }
 
-    async getAll(): Promise<Author[]> {
+    async get(filterParams: filterParamsAuthorType): Promise<Author[]> {
         try {
-            const authorsWithIds = await this.authorCollection.find().toArray() as WithId<Author>[];
-            
-            const authors: Author[] = authorsWithIds.map((bookWithId) => this.mapAuthorFromDatabase(bookWithId));
-            return authors;
+            let query: any = {
+                $or: [
+                    { name: { $regex: filterParams.searchQuery, $options: 'i' } },
+                    { 'famous_works.title': { $regex: filterParams.searchQuery, $options: 'i' } }
+                ]
+            };
+
+            if (filterParams.sort) {
+                query.sort = filterParams.sort;
+            }
+            const authors = await this.authorCollection.find(query)
+                .skip(filterParams.skip)
+                .limit(filterParams.limit)
+                .toArray() as WithId<Author>[];
+
+            const authorsMapped: Author[] = authors.map((author) => this.mapAuthorFromDatabase(author));
+
+            return authorsMapped;
         } catch (error) {
             console.error("Error getting all authors:", error);
             throw new Error("Failed to retrieve authors");
