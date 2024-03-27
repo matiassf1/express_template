@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import { v4 as uuidv4, v4 } from 'uuid';
 import { BookMongoModel } from "../model/book";
-import { validateBook, validatePartialBook, Book } from "../schemas/book";
+import { validateBook, validatePartialBook, Book, validateQueryParamsBook, filterParamsType } from "../schemas/book";
+import { PaginatedResult, PaginationDTO } from "../common/pagination";
 
 export class BookController {
     private bookModel: BookMongoModel;
@@ -9,10 +11,22 @@ export class BookController {
         this.bookModel = bookModel;
     }
 
-    async getAll(req: Request, res: Response) {
+    async get(req: Request, res: Response) {
         try {
-            const books = await this.bookModel.getAll();
-            return res.json(books);
+            const paginationDTO = new PaginationDTO<Book>();
+            const { limit, skip, sort } = paginationDTO.paginate(req.query);
+            const searchQuery = paginationDTO.search(req.query);
+
+            const queryParams = validateQueryParamsBook(req.query);
+            let genres = queryParams.genres;
+
+            const filterParams: filterParamsType = { limit, skip, searchQuery, sort, genres }
+            const books = await this.bookModel.get(filterParams);
+
+            const result: PaginatedResult<Book> = paginationDTO.paginate(req.query);
+            result.data = books;
+
+            return res.json(result);
         } catch (error) {
             console.error("Error getting all books:", error);
             res.status(500).json({ message: "Internal server error" });
@@ -43,8 +57,11 @@ export class BookController {
                 return res.status(400).json({ error: result.error });
             }
 
-            const newBook: Book = result.data;
-            
+            const newBook: Book = {
+                ...result.data,
+                id: uuidv4()
+            };
+
             const createdBook = await this.bookModel.create(newBook);
 
             return res.status(201).json(createdBook);

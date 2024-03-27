@@ -1,5 +1,5 @@
 import { Collection, ObjectId, WithId } from "mongodb";
-import { Book } from "../schemas/book";
+import { Book, filterParamsType } from "../schemas/book";
 import { Database } from "../database/MongoDb";
 
 export class BookMongoModel {
@@ -9,12 +9,24 @@ export class BookMongoModel {
         this.booksCollection = booksDb.getDb().collection('books');
     }
 
-    async getAll(): Promise<Book[]> {
+    async get(filterParams: filterParamsType): Promise<Book[]> {
         try {
-            const booksWithIds = await this.booksCollection.find().toArray() as WithId<Book>[];
-            
-            const books: Book[] = booksWithIds.map((bookWithId) => this.mapBookFromDatabase(bookWithId));
-            return books;
+            let query: any = { title: { $regex: filterParams.searchQuery, $options: 'i' } };
+
+            if (filterParams.genres && filterParams.genres.length > 0) {
+                query.genre = { $in: filterParams.genres };
+            }
+            if (filterParams.sort) {
+                query.sort = filterParams.sort;
+            }
+            const books = await this.booksCollection.find(query)
+                .skip(filterParams.skip)
+                .limit(filterParams.limit)
+                .toArray() as WithId<Book>[];
+
+            const booksMapped: Book[] = books.map((book) => this.mapBookFromDatabase(book));
+
+            return booksMapped;
         } catch (error) {
             console.error("Error getting all books:", error);
             throw new Error("Failed to retrieve books");
