@@ -5,7 +5,7 @@ const express_1 = require("express");
 const bookRouter = (bookController) => {
     const router = (0, express_1.Router)();
     router.get('/', (req, res) => {
-        bookController.getAll(req, res);
+        bookController.get(req, res);
     });
     router.get('/:id', (req, res) => {
         bookController.getById(req, res);

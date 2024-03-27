@@ -11,15 +11,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookController = void 0;
 const book_1 = require("../schemas/book");
+const pagination_1 = require("../common/pagination");
 class BookController {
     constructor(bookModel) {
         this.bookModel = bookModel;
     }
-    getAll(req, res) {
+    get(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const books = yield this.bookModel.getAll();
-                return res.json(books);
+                const paginationDTO = new pagination_1.PaginationDTO();
+                const { limit, skip, sort } = paginationDTO.paginate(req.query);
+                const searchQuery = paginationDTO.search(req.query);
+                const queryParams = (0, book_1.validateQueryParamsBook)(req.query);
+                let genres = queryParams.genres;
+                const filterParams = { limit, skip, searchQuery, sort, genres };
+                const books = yield this.bookModel.get(filterParams);
+                const result = paginationDTO.paginate(req.query);
+                result.data = books;
+                return res.json(result);
             }
             catch (error) {
                 console.error("Error getting all books:", error);

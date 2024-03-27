@@ -15,12 +15,22 @@ class BookMongoModel {
     constructor(booksDb) {
         this.booksCollection = booksDb.getDb().collection('books');
     }
-    getAll() {
+    get(filterParams) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const booksWithIds = yield this.booksCollection.find().toArray();
-                const books = booksWithIds.map((bookWithId) => this.mapBookFromDatabase(bookWithId));
-                return books;
+                let query = { title: { $regex: filterParams.searchQuery, $options: 'i' } };
+                if (filterParams.genres && filterParams.genres.length > 0) {
+                    query.genre = { $in: filterParams.genres };
+                }
+                if (filterParams.sort) {
+                    query.sort = filterParams.sort;
+                }
+                const books = yield this.booksCollection.find(query)
+                    .skip(filterParams.skip)
+                    .limit(filterParams.limit)
+                    .toArray();
+                const booksMapped = books.map((book) => this.mapBookFromDatabase(book));
+                return booksMapped;
             }
             catch (error) {
                 console.error("Error getting all books:", error);
