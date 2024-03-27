@@ -18,10 +18,12 @@ export class AuthorMongoModel {
                 ]
             };
 
+            const sort = filterParams.sort.length > 0 ? filterParams.sort : 'name'
+
             const authors = await this.authorCollection.find(query)
                 .skip(filterParams.skip)
                 .limit(filterParams.limit)
-                .sort(filterParams.sort)
+                .sort(sort)
                 .toArray() as WithId<Author>[];
 
             const authorsMapped: Author[] = authors.map((author) => this.mapAuthorFromDatabase(author));
