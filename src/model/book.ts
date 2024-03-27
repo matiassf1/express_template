@@ -1,5 +1,5 @@
 import { Collection, ObjectId, WithId } from "mongodb";
-import { Book, filterParamsType } from "../schemas/book";
+import { Book, filterParamsBookType,  } from "../schemas/book";
 import { Database } from "../database/MongoDb";
 
 export class BookMongoModel {
@@ -9,7 +9,7 @@ export class BookMongoModel {
         this.booksCollection = booksDb.getDb().collection('books');
     }
 
-    async get(filterParams: filterParamsType): Promise<Book[]> {
+    async get(filterParams: filterParamsBookType): Promise<Book[]> {
         try {
             let query: any = { title: { $regex: filterParams.searchQuery, $options: 'i' } };
 

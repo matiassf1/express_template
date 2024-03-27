@@ -5,7 +5,7 @@ export const authorRouter = (authorController: AuthorController) => {
     const router = Router()
 
     router.get('/', (req, res) => {
-        authorController.getAll(req, res);
+        authorController.get(req, res);
     });
     router.get('/:id', (req, res) => {
         authorController.getById(req, res);
