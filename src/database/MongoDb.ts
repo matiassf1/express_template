@@ -40,4 +40,25 @@ export class Database {
         }
         return this.client.db(this.dbName);
     }
+
+    async checkDatabase(): Promise<boolean> {
+        try {
+            if (!this.client) {
+                throw new Error('Database connection has not been established.');
+            }
+            const db: Db = this.client.db(this.dbName);
+            // Realiza una operación simple para verificar si la base de datos responde
+            const result = await db.command({ ping: 1 });
+            if (result.ok === 1) {
+                console.log('Database is up and running');
+                return true;
+            } else {
+                console.error('Database is not responding as expected');
+                return false;
+            }
+        } catch (error) {
+            console.error('Error checking database status:', error);
+            return false;
+        }
+    }
 }
