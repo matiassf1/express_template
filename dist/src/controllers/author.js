@@ -10,16 +10,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthorController = void 0;
+const uuid_1 = require("uuid");
 const author_1 = require("../schemas/author");
+const pagination_1 = require("../common/pagination");
 class AuthorController {
     constructor(authorModel) {
         this.authorModel = authorModel;
     }
-    getAll(req, res) {
+    get(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const authors = yield this.authorModel.getAll();
-                return res.json(authors);
+                const paginationDTO = new pagination_1.PaginationDTO();
+                const { limit, skip, sort } = paginationDTO.paginate(req.query);
+                const searchQuery = paginationDTO.search(req.query);
+                const filterParams = { limit, skip, searchQuery, sort };
+                const authors = yield this.authorModel.get(filterParams);
+                const result = paginationDTO.paginate(req.query);
+                result.data = authors;
+                return res.json(result);
             }
             catch (error) {
                 console.error("Error getting all authors:", error);
@@ -50,7 +58,7 @@ class AuthorController {
                 if (!result.success) {
                     return res.status(400).json({ error: result.error });
                 }
-                const newAuthor = result.data;
+                const newAuthor = Object.assign(Object.assign({}, result.data), { id: (0, uuid_1.v4)() });
                 const createdAuthor = yield this.authorModel.create(newAuthor);
                 return res.status(201).json(createdAuthor);
             }

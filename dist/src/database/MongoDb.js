@@ -52,5 +52,28 @@ class Database {
         }
         return this.client.db(this.dbName);
     }
+    checkDatabase() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!this.client) {
+                    throw new Error('Database connection has not been established.');
+                }
+                const db = this.client.db(this.dbName);
+                const result = yield db.command({ ping: 1 });
+                if (result.ok === 1) {
+                    console.log('Database is up and running');
+                    return true;
+                }
+                else {
+                    console.error('Database is not responding as expected');
+                    return false;
+                }
+            }
+            catch (error) {
+                console.error('Error checking database status:', error);
+                return false;
+            }
+        });
+    }
 }
 exports.Database = Database;

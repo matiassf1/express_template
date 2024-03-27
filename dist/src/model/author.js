@@ -15,12 +15,24 @@ class AuthorMongoModel {
     constructor(authorsDb) {
         this.authorCollection = authorsDb.getDb().collection('authors');
     }
-    getAll() {
+    get(filterParams) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const authorsWithIds = yield this.authorCollection.find().toArray();
-                const authors = authorsWithIds.map((bookWithId) => this.mapAuthorFromDatabase(bookWithId));
-                return authors;
+                let query = {
+                    $or: [
+                        { name: { $regex: filterParams.searchQuery, $options: 'i' } },
+                        { 'famous_works.title': { $regex: filterParams.searchQuery, $options: 'i' } }
+                    ]
+                };
+                if (filterParams.sort) {
+                    query.sort = filterParams.sort;
+                }
+                const authors = yield this.authorCollection.find(query)
+                    .skip(filterParams.skip)
+                    .limit(filterParams.limit)
+                    .toArray();
+                const authorsMapped = authors.map((author) => this.mapAuthorFromDatabase(author));
+                return authorsMapped;
             }
             catch (error) {
                 console.error("Error getting all authors:", error);

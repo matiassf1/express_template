@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.validatePartialAuthor = exports.validateAuthor = exports.AuthorSchema = void 0;
 const zod_1 = require("zod");
 exports.AuthorSchema = zod_1.z.object({
-    id: zod_1.z.string(),
     name: zod_1.z.string(),
     birth_date: zod_1.z.string(),
     nationality: zod_1.z.string(),

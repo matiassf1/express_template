@@ -37,4 +37,19 @@ app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield db.close();
     next();
 }));
+app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const isDatabaseHealthy = yield db.checkDatabase();
+        if (isDatabaseHealthy) {
+            res.status(200).send('API is healthy');
+        }
+        else {
+            res.status(500).send('Database is not healthy');
+        }
+    }
+    catch (error) {
+        console.error('Health check failed:', error);
+        res.status(500).send('Health check failed');
+    }
+}));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
