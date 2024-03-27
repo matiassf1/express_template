@@ -5,7 +5,7 @@ const express_1 = require("express");
 const authorRouter = (authorController) => {
     const router = (0, express_1.Router)();
     router.get('/', (req, res) => {
-        authorController.getAll(req, res);
+        authorController.get(req, res);
     });
     router.get('/:id', (req, res) => {
         authorController.getById(req, res);
