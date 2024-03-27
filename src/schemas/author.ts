@@ -3,7 +3,7 @@ import { z } from "zod";
 export type filterParamsAuthorType = {
     limit: number;
     skip: number;
-    sort: string | null;
+    sort: string;
     searchQuery: string;
 }
 
