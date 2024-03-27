@@ -47,7 +47,6 @@ export class Database {
                 throw new Error('Database connection has not been established.');
             }
             const db: Db = this.client.db(this.dbName);
-            // Realiza una operación simple para verificar si la base de datos responde
             const result = await db.command({ ping: 1 });
             if (result.ok === 1) {
                 console.log('Database is up and running');
