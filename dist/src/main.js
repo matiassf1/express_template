@@ -33,10 +33,6 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use('/books', (0, book_1.bookRouter)(new book_2.BookController(bookMongoModel)));
 app.use('/authors', author_1.authorRouter);
-app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    yield db.close();
-    next();
-}));
 app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isDatabaseHealthy = yield db.checkDatabase();
@@ -51,5 +47,9 @@ app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.error('Health check failed:', error);
         res.status(500).send('Health check failed');
     }
+}));
+app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    yield db.close();
+    next();
 }));
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));

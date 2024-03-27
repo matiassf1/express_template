@@ -24,11 +24,6 @@ app.use(cors());
 app.use('/books', bookRouter(new BookController(bookMongoModel)));
 app.use('/authors', authorRouter);
 
-app.use(async (req, res, next) => {
-    await db.close();
-    next();
-});
-
 app.get('/health', async (req: Request, res: Response) => {
     try {
         const isDatabaseHealthy = await db.checkDatabase();
@@ -41,6 +36,11 @@ app.get('/health', async (req: Request, res: Response) => {
         console.error('Health check failed:', error);
         res.status(500).send('Health check failed');
     }
+});
+
+app.use(async (req, res, next) => {
+    await db.close();
+    next();
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
