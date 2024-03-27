@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Database = void 0;
 const mongodb_1 = require("mongodb");
+require('dotenv').config();
 class Database {
     constructor(uri, dbName) {
         this.client = null;
@@ -21,7 +22,7 @@ class Database {
     connect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                this.client = new mongodb_1.MongoClient('mongodb+srv://user:random123@books.p2jaw9s.mongodb.net/?retryWrites=true&w=majority&appName=books');
+                this.client = new mongodb_1.MongoClient(this.uri);
                 yield this.client.connect();
                 console.log('Connection established successfully');
             }
@@ -50,7 +51,7 @@ class Database {
         if (!this.client) {
             throw new Error('Database connection has not been established.');
         }
-        return this.client.db('library');
+        return this.client.db(this.dbName);
     }
     checkDatabase() {
         return __awaiter(this, void 0, void 0, function* () {
