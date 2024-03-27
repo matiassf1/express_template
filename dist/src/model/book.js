@@ -22,12 +22,10 @@ class BookMongoModel {
                 if (filterParams.genres && filterParams.genres.length > 0) {
                     query.genre = { $in: filterParams.genres };
                 }
-                if (filterParams.sort) {
-                    query.sort = filterParams.sort;
-                }
                 const books = yield this.booksCollection.find(query)
                     .skip(filterParams.skip)
                     .limit(filterParams.limit)
+                    .sort(filterParams.sort)
                     .toArray();
                 const booksMapped = books.map((book) => this.mapBookFromDatabase(book));
                 return booksMapped;

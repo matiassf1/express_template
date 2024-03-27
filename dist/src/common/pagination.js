@@ -21,7 +21,7 @@ class PaginationDTO {
         return parsedQuery.data;
     }
     paginate(query) {
-        const { limit = this.defaultLimit, page = 1, search = '', sort = null } = this.validateQuery(query);
+        const { limit = this.defaultLimit, page = 1, search = '', sort = '' } = this.validateQuery(query);
         const normalizedLimit = Math.min(limit, this.maxLimit);
         const normalizedPage = Math.max(page, 1);
         const skip = (normalizedPage - 1) * normalizedLimit;

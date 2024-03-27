@@ -16,12 +16,10 @@ export class BookMongoModel {
             if (filterParams.genres && filterParams.genres.length > 0) {
                 query.genre = { $in: filterParams.genres };
             }
-            if (filterParams.sort) {
-                query.sort = filterParams.sort;
-            }
             const books = await this.booksCollection.find(query)
                 .skip(filterParams.skip)
                 .limit(filterParams.limit)
+                .sort(filterParams.sort)
                 .toArray() as WithId<Book>[];
 
             const booksMapped: Book[] = books.map((book) => this.mapBookFromDatabase(book));

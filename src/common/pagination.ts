@@ -10,7 +10,7 @@ export interface PaginatedResult<T> {
     data: T[];
     limit: number;
     skip: number;
-    sort: string | null;
+    sort: string;
     search: string;
     
 }
@@ -40,7 +40,7 @@ export class PaginationDTO<T> {
     }
 
     paginate(query: any): PaginatedResult<T> {
-        const { limit = this.defaultLimit, page = 1, search = '', sort = null } = this.validateQuery(query);
+        const { limit = this.defaultLimit, page = 1, search = '', sort = '' } = this.validateQuery(query);
 
         const normalizedLimit = Math.min(limit, this.maxLimit);
         const normalizedPage = Math.max(page, 1);
