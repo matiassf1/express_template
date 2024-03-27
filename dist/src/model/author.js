@@ -24,10 +24,11 @@ class AuthorMongoModel {
                         { 'famous_works.title': { $regex: filterParams.searchQuery, $options: 'i' } }
                     ]
                 };
+                const sort = filterParams.sort.length > 0 ? filterParams.sort : 'name';
                 const authors = yield this.authorCollection.find(query)
                     .skip(filterParams.skip)
                     .limit(filterParams.limit)
-                    .sort(filterParams.sort)
+                    .sort(sort)
                     .toArray();
                 const authorsMapped = authors.map((author) => this.mapAuthorFromDatabase(author));
                 return authorsMapped;
