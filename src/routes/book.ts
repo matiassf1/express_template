@@ -6,7 +6,7 @@ export const bookRouter = (bookController: BookController) => {
     const router = Router()
 
     router.get('/', (req, res) => {
-        bookController.getAll(req, res);
+        bookController.get(req, res);
     });
     router.get('/:id', (req, res) => {
         bookController.getById(req, res);
