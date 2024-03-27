@@ -1,4 +1,4 @@
-import { MongoClient, Db } from 'mongodb';
+import { MongoClient, Db, ServerApiVersion } from 'mongodb';
 
 export class Database {
     private client: MongoClient | null = null;
@@ -13,7 +13,13 @@ export class Database {
 
     async connect(): Promise<void> {
         try {
-            this.client = new MongoClient(this.uri);
+            this.client = new MongoClient(this.uri, {
+                serverApi: {
+                    version: ServerApiVersion.v1,
+                    strict: true,
+                    deprecationErrors: true,
+                }
+            });
             await this.client.connect();
             console.log('Connection established successfully');
         } catch (error) {
