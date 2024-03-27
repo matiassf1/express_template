@@ -1,4 +1,5 @@
-import { MongoClient, Db, ServerApiVersion } from 'mongodb';
+import { MongoClient, Db } from 'mongodb';
+require('dotenv').config();
 
 export class Database {
     private client: MongoClient | null = null;
@@ -13,7 +14,7 @@ export class Database {
 
     async connect(): Promise<void> {
         try {
-            this.client = new MongoClient('mongodb+srv://user:random123@books.p2jaw9s.mongodb.net/?retryWrites=true&w=majority&appName=books');
+            this.client = new MongoClient(this.uri);
             await this.client.connect();
             console.log('Connection established successfully');
         } catch (error) {
@@ -38,7 +39,7 @@ export class Database {
         if (!this.client) {
             throw new Error('Database connection has not been established.');
         }
-        return this.client.db('library');
+        return this.client.db(this.dbName);
     }
 
     async checkDatabase(): Promise<boolean> {
