@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export type filterParamsType = {
+export type filterParamsBookType = {
     limit: number;
     skip: number;
     sort: string | null;
@@ -31,6 +31,11 @@ export const BookSchema = z.object({
     publisher: z.string(),
 });
 
+const BookQueryParamsSchema = z.object({
+    genres: z.nativeEnum(BookGenre).array().optional(),
+});
+
+
 export type Book = {
     id: string,
     title: string,
@@ -49,9 +54,6 @@ export function validatePartialBook(input: unknown) {
     return BookSchema.partial().safeParse(input)
 }
 
-export const BookQueryParamsSchema = z.object({
-    genres: z.nativeEnum(BookGenre).array().optional(),
-});
 
 export function validateQueryParamsBook(input: unknown) {
     return BookQueryParamsSchema.parse(input)
