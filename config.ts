@@ -1,1 +1,2 @@
-export const uri = 'mongodb+srv://user:random123@books.p2jaw9s.mongodb.net/'
+export const dbUri = process.env.DBuri || '';
+export const dbName = process.env.DBName || '';

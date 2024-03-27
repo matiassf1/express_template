@@ -2,15 +2,15 @@ import express, { Request, Response } from "express";
 import { authorRouter } from "./routes/author";
 import { bookRouter } from "./routes/book";
 import cors from "cors";
-import { uri } from "../config";
 import { Database } from "./database/MongoDb";
 import { BookController } from "./controllers/book";
 import { BookMongoModel } from "./model/book";
+import { dbName, dbUri } from "../config";
 
 const app = express();
 const port = process.env.PORT ?? 3000
 
-const db = new Database(uri, 'library');
+const db = new Database(dbUri, dbName);
 const bookMongoModel = new BookMongoModel(db);
 
 app.use(async (req, res, next) => {
