@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4, v4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 import { BookMongoModel } from "../model/book";
-import { validateBook, validatePartialBook, Book, validateQueryParamsBook, filterParamsType } from "../schemas/book";
+import { validateBook, validatePartialBook, Book, validateQueryParamsBook, filterParamsBookType } from "../schemas/book";
 import { PaginatedResult, PaginationDTO } from "../common/pagination";
 
 export class BookController {
@@ -20,7 +20,7 @@ export class BookController {
             const queryParams = validateQueryParamsBook(req.query);
             let genres = queryParams.genres;
 
-            const filterParams: filterParamsType = { limit, skip, searchQuery, sort, genres }
+            const filterParams: filterParamsBookType = { limit, skip, searchQuery, sort, genres }
             const books = await this.bookModel.get(filterParams);
 
             const result: PaginatedResult<Book> = paginationDTO.paginate(req.query);
