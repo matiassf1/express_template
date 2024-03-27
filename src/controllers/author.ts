@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
+import { v4 as uuidv4 } from 'uuid';
 import { AuthorMongoModel } from "../model/author";
-import { Author, validateAuthor, validatePartialAuthor } from "../schemas/author";
+import { Author, filterParamsAuthorType, validateAuthor, validatePartialAuthor } from "../schemas/author";
+import { PaginatedResult, PaginationDTO } from "../common/pagination";
 
 export class AuthorController {
     private authorModel: AuthorMongoModel;
@@ -9,10 +11,19 @@ export class AuthorController {
         this.authorModel = authorModel;
     }
 
-    async getAll(req: Request, res: Response) {
+    async get(req: Request, res: Response) {
         try {
-            const authors = await this.authorModel.getAll();
-            return res.json(authors);
+            const paginationDTO = new PaginationDTO<Author>();
+            const { limit, skip, sort } = paginationDTO.paginate(req.query);
+            const searchQuery = paginationDTO.search(req.query);
+
+            const filterParams: filterParamsAuthorType = { limit, skip, searchQuery, sort }
+            const authors = await this.authorModel.get(filterParams);
+
+            const result: PaginatedResult<Author> = paginationDTO.paginate(req.query);
+            result.data = authors;
+
+            return res.json(result);
         } catch (error) {
             console.error("Error getting all authors:", error);
             res.status(500).json({ message: "Internal server error" });
@@ -43,7 +54,10 @@ export class AuthorController {
                 return res.status(400).json({ error: result.error });
             }
 
-            const newAuthor: Author = result.data;
+            const newAuthor: Author = {
+                ...result.data,
+                id: uuidv4()
+            }
             
             const createdAuthor = await this.authorModel.create(newAuthor);
 
