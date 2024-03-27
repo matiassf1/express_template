@@ -6,12 +6,15 @@ import { Database } from "./database/MongoDb";
 import { BookController } from "./controllers/book";
 import { BookMongoModel } from "./model/book";
 import { dbName, dbUri } from "../config";
+import { AuthorController } from "./controllers/author";
+import { AuthorMongoModel } from "./model/author";
 
 const app = express();
 const port = process.env.PORT ?? 3000
 
 const db = new Database(dbUri, dbName);
 const bookMongoModel = new BookMongoModel(db);
+const authorMongoModel = new AuthorMongoModel(db);
 
 app.use(async (req, res, next) => {
     await db.connect();
@@ -22,7 +25,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/books', bookRouter(new BookController(bookMongoModel)));
-app.use('/authors', authorRouter);
+app.use('/authors', authorRouter(new AuthorController(authorMongoModel)));
 
 app.get('/health', async (req: Request, res: Response) => {
     try {

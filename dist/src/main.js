@@ -21,10 +21,13 @@ const MongoDb_1 = require("./database/MongoDb");
 const book_2 = require("./controllers/book");
 const book_3 = require("./model/book");
 const config_1 = require("../config");
+const author_2 = require("./controllers/author");
+const author_3 = require("./model/author");
 const app = (0, express_1.default)();
 const port = (_a = process.env.PORT) !== null && _a !== void 0 ? _a : 3000;
 const db = new MongoDb_1.Database(config_1.dbUri, config_1.dbName);
 const bookMongoModel = new book_3.BookMongoModel(db);
+const authorMongoModel = new author_3.AuthorMongoModel(db);
 app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     yield db.connect();
     next();
@@ -32,7 +35,7 @@ app.use((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
 app.use(express_1.default.json());
 app.use((0, cors_1.default)());
 app.use('/books', (0, book_1.bookRouter)(new book_2.BookController(bookMongoModel)));
-app.use('/authors', author_1.authorRouter);
+app.use('/authors', (0, author_1.authorRouter)(new author_2.AuthorController(authorMongoModel)));
 app.get('/health', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const isDatabaseHealthy = yield db.checkDatabase();

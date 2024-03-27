@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from 'uuid';
 import { AuthorMongoModel } from "../model/author";
 import { Author, filterParamsAuthorType, validateAuthor, validatePartialAuthor } from "../schemas/author";
 import { PaginatedResult, PaginationDTO } from "../common/pagination";
@@ -56,7 +55,6 @@ export class AuthorController {
 
             const newAuthor: Author = {
                 ...result.data,
-                id: uuidv4()
             }
             
             const createdAuthor = await this.authorModel.create(newAuthor);

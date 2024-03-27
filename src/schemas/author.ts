@@ -20,7 +20,6 @@ export const AuthorSchema = z.object({
 });
 
 export type Author = {
-    id: string,
     name: string,
     birth_date: string,
     nationality: string,

@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { v4 as uuidv4 } from 'uuid';
 import { BookMongoModel } from "../model/book";
 import { validateBook, validatePartialBook, Book, validateQueryParamsBook, filterParamsBookType } from "../schemas/book";
 import { PaginatedResult, PaginationDTO } from "../common/pagination";
@@ -59,7 +58,6 @@ export class BookController {
 
             const newBook: Book = {
                 ...result.data,
-                id: uuidv4()
             };
 
             const createdBook = await this.bookModel.create(newBook);
